@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101827"><title>Finora 2.0 — Personal Finance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-brand"><span class="logo">F</span><span>finora<span class="purple">.</span></span></div>
+    <div class="auth-card">
+      <p class="eyebrow">PERSONAL FINANCE, MADE CLEAR</p>
+      <h1 id="authTitle">Welcome back</h1><p class="muted" id="authSubtitle">Log in to your personal finance workspace.</p>
+      <div class="auth-tabs"><button class="active" id="loginTab">Log in</button><button id="signupTab">Create account</button></div>
+      <form id="authForm">
+        <label id="nameWrap" class="hidden">Full name<input id="fullName" autocomplete="name" placeholder="Your name"></label>
+        <label>Email address<input id="email" type="email" autocomplete="email" required placeholder="you@example.com"></label>
+        <label>Password<input id="password" type="password" autocomplete="current-password" required minlength="6" placeholder="At least 6 characters"></label>
+        <button class="primary full" id="authSubmit">Log in</button>
+      </form>
+      <button class="link-btn" id="forgotBtn">Forgot password?</button>
+      <p class="auth-note">Your account and financial records are private. Authentication and data storage are handled by Supabase.</p>
+      <p id="authMessage" class="message"></p>
+    </div>
+    <p class="tiny">Finora 2.0 · Cloud-connected personal finance</p>
+  </div>
+
+  <div id="appShell" class="shell hidden">
+    <aside class="sidebar">
+      <div class="brand"><span class="logo">F</span><span>finora<span class="purple">.</span></span></div>
+      <p class="nav-caption">WORKSPACE</p>
+      <nav>
+        <button class="nav-item active" data-page="dashboard">▦ <span>Dashboard</span></button>
+        <button class="nav-item" data-page="transactions">↕ <span>Transactions</span></button>
+        <button class="nav-item" data-page="budgets">◎ <span>Budget progress</span></button>
+        <button class="nav-item" data-page="goals">◇ <span>Savings goals</span></button>
+        <button class="nav-item" data-page="comparison">◷ <span>Monthly comparison</span></button>
+        <button class="nav-item" data-page="insights">✦ <span>Recommendations</span></button>
+        <button class="nav-item" data-page="reports">▤ <span>Reports & export</span></button>
+      </nav>
+      <div class="sidebar-bottom"><div class="cloud-note">☁️ <span>Your data syncs to your account.</span></div><button id="themeBtn" class="nav-item">☾ <span>Toggle appearance</span></button><button id="logoutBtn" class="nav-item logout">↪ <span>Log out</span></button></div>
+    </aside>
+    <main class="main">
+      <header class="topbar"><div><span class="crumb">PERSONAL WORKSPACE / </span><strong id="pageTitle">Dashboard</strong></div><div class="top-right"><span id="userEmail" class="muted"></span><button class="primary small" id="quickAdd">＋ Add transaction</button></div></header>
+      <section id="page-dashboard" class="page active">
+        <div class="page-head"><div><p class="eyebrow">YOUR FINANCIAL OVERVIEW</p><h1>Your money, in focus<span class="purple">.</span></h1><p class="muted">A clearer view of what comes in, goes out and stays with you.</p></div><select id="dashPeriod"><option value="month">This month</option><option value="year">This year</option><option value="all">All time</option></select></div>
+        <div class="stats">
+          <article class="stat balance"><span>Net balance · selected period</span><strong id="balanceValue">₹0</strong><small>Income minus expenses</small></article>
+          <article class="stat"><span>Total income</span><strong id="incomeValue">₹0</strong><small class="green">↗ Money received</small></article>
+          <article class="stat"><span>Total expenses</span><strong id="expenseValue">₹0</strong><small class="red">↘ Money spent</small></article>
+          <article class="stat"><span>Net savings</span><strong id="savingValue">₹0</strong><small id="savingRate">0% savings rate</small></article>
+        </div>
+        <div class="two-col">
+          <article class="panel"><div class="panel-head"><div><h2>Income vs expenses</h2><p class="muted">Last six months</p></div><span class="legend">● Income &nbsp; <i>●</i> Expenses</span></div><canvas id="flowChart" height="250"></canvas></article>
+          <article class="panel"><div class="panel-head"><div><h2>Where your money goes</h2><p class="muted">Expense categories this period</p></div></div><canvas id="donutChart" height="220"></canvas><div id="categoryLegend" class="legend-list"></div></article>
+        </div>
+        <div class="two-col lower"><article class="panel"><div class="panel-head"><div><h2>Recent transactions</h2><p class="muted">Your latest activity</p></div><button class="link-btn" data-jump="transactions">View all →</button></div><div id="recentList"></div></article><article class="panel"><div class="panel-head"><div><h2>Savings goals</h2><p class="muted">Your progress</p></div><button class="link-btn" data-jump="goals">View goals →</button></div><div id="goalPreview"></div></article></div>
+      </section>
+
+      <section id="page-transactions" class="page">
+        <div class="page-head"><div><p class="eyebrow">MONEY ACTIVITY</p><h1>Transactions<span class="purple">.</span></h1><p class="muted">Record, search and review your financial activity.</p></div><button class="primary" id="addTx">＋ Add transaction</button></div>
+        <div class="panel"><div class="toolbar"><input id="txSearch" placeholder="Search description or category"><select id="txType"><option value="all">All types</option><option value="income">Income</option><option value="expense">Expense</option></select><input type="month" id="txMonth"><button class="secondary" id="txPdf">Download PDF</button></div><div class="table-wrap"><table><thead><tr><th>DESCRIPTION</th><th>CATEGORY</th><th>DATE</th><th>TYPE</th><th class="right">AMOUNT</th><th></th></tr></thead><tbody id="txRows"></tbody></table></div><div id="txEmpty" class="empty hidden">No transactions match your filters.</div></div>
+      </section>
+
+      <section id="page-budgets" class="page">
+        <div class="page-head"><div><p class="eyebrow">SPEND WITH INTENTION</p><h1>Budget progress<span class="purple">.</span></h1><p class="muted">Set category limits and keep spending on track.</p></div><button class="primary" id="addBudget">＋ Set budget</button></div>
+        <div id="budgetCards" class="cards-grid"></div>
+      </section>
+
+      <section id="page-goals" class="page">
+        <div class="page-head"><div><p class="eyebrow">SAVE TOWARDS WHAT MATTERS</p><h1>Savings goals<span class="purple">.</span></h1><p class="muted">Create targets and track your progress over time.</p></div><button class="primary" id="addGoal">＋ Create goal</button></div>
+        <div id="goalCards" class="cards-grid"></div>
+      </section>
+
+      <section id="page-comparison" class="page">
+        <div class="page-head"><div><p class="eyebrow">SEE YOUR PROGRESS</p><h1>Monthly comparison<span class="purple">.</span></h1><p class="muted">Compare income, expenses and savings between two months.</p></div></div>
+        <div class="panel compare-controls"><label>First month<input type="month" id="monthA"></label><label>Second month<input type="month" id="monthB"></label><button class="primary" id="compareBtn">Compare months</button></div>
+        <div id="comparisonResult" class="stats comparison-stats"></div><div class="panel"><h2>Category spending comparison</h2><div id="categoryCompare"></div></div>
+      </section>
+
+      <section id="page-insights" class="page">
+        <div class="page-head"><div><p class="eyebrow">MAKE YOUR DATA USEFUL</p><h1>Recommendations<span class="purple">.</span></h1><p class="muted">Practical observations generated from your recorded transactions.</p></div><button class="secondary" id="refreshInsights">↻ Refresh</button></div>
+        <div id="insightList" class="insight-grid"></div>
+        <p class="disclaimer">Insights are educational observations based on entries you record. They are not investment, tax or debt advice.</p>
+      </section>
+
+      <section id="page-reports" class="page">
+        <div class="page-head"><div><p class="eyebrow">YOUR RECORDS, YOUR CONTROL</p><h1>Reports & export<span class="purple">.</span></h1><p class="muted">Download a statement or keep a personal backup.</p></div></div>
+        <div class="cards-grid">
+          <article class="panel"><div class="feature-icon">▤</div><h2>PDF statement</h2><p class="muted">Choose a date range and download a formatted transaction statement.</p><label>From<input type="date" id="pdfFrom"></label><label>To<input type="date" id="pdfTo"></label><button class="primary full" id="reportPdf">Generate PDF</button></article>
+          <article class="panel"><div class="feature-icon">⇩</div><h2>CSV export</h2><p class="muted">Download your transaction records in a spreadsheet-compatible format.</p><button class="secondary full" id="csvExport">Download CSV</button></article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop hidden" id="txModal"><form class="modal" id="txForm"><div class="modal-head"><div><p class="eyebrow">RECORD MONEY ACTIVITY</p><h2 id="txModalTitle">Add transaction</h2></div><button type="button" class="close" data-close="txModal">×</button></div><input type="hidden" id="txId"><div class="switch"><button type="button" class="selected" data-txtype="expense">Expense</button><button type="button" data-txtype="income">Income</button></div><label>Description<input id="txDesc" required maxlength="80" placeholder="e.g. Grocery shopping"></label><div class="form-row"><label>Amount (₹)<input id="txAmount" type="number" min=".01" step=".01" required></label><label>Category<select id="txCategory"></select></label></div><div class="form-row"><label>Date<input id="txDate" type="date" required></label><label>Payment method<select id="txPayment"><option>UPI</option><option>Cash</option><option>Debit card</option><option>Credit card</option><option>Bank transfer</option><option>Other</option></select></label></div><label>Notes (optional)<textarea id="txNotes" rows="2"></textarea><button class="primary full">Save transaction</button></form></div>
+
+  <div class="modal-backdrop hidden" id="budgetModal"><form class="modal compact" id="budgetForm"><div class="modal-head"><h2>Set monthly budget</h2><button type="button" class="close" data-close="budgetModal">×</button></div><label>Category<select id="budgetCat"></select></label><label>Monthly limit (₹)<input id="budgetLimit" type="number" min="1" required></label><button class="primary full">Save budget</button></form></div>
+  <div class="modal-backdrop hidden" id="goalModal"><form class="modal compact" id="goalForm"><div class="modal-head"><h2>Create savings goal</h2><button type="button" class="close" data-close="goalModal">×</button></div><label>Goal name<input id="goalName" required placeholder="e.g. Emergency fund"></label><label>Target amount (₹)<input id="goalTarget" type="number" min="1" required></label><label>Target date<input id="goalDate" type="date"></label><label>Initial saved amount (₹)<input id="goalSaved" type="number" min="0" value="0"></label><button class="primary full">Create goal</button></form></div>
+  <div class="modal-backdrop hidden" id="contributeModal"><form class="modal compact" id="contributeForm"><div class="modal-head"><h2>Add goal contribution</h2><button type="button" class="close" data-close="contributeModal">×</button></div><input type="hidden" id="contributeGoalId"><p class="muted" id="contributeGoalLabel"></p><label>Contribution amount (₹)<input id="contributeAmount" type="number" min=".01" required></label><button class="primary full">Add contribution</button></form></div>
+  <div id="toast" class="toast"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+  <script src="config.js"></script><script src="app.js"></script>
+</body></html>
